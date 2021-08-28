@@ -25,14 +25,26 @@ SDL_Surface* init() {             // initialise SDL
     atexit(SDL_Quit);
     //if(SDL_InitSubSystem(SDL_INIT_AUDIO) == -1) *SOUND = false;
 
+#ifndef DINGUX
     SDL_WM_SetCaption("Return of the Hylian",NULL);
     SDL_Surface* icon = SDL_LoadBMP("data/images/logos/triforce.ico");
     SDL_SetColorKey(icon,SDL_SRCCOLORKEY,SDL_MapRGB(icon->format,0,0,0));
     SDL_WM_SetIcon(icon,NULL);
+#endif
 
     SDL_ShowCursor(SDL_DISABLE);
 
+#ifdef DINGUX
+    return SDL_SetVideoMode(320, 240, 16, SDL_HWSURFACE |
+        #ifdef SDL_TRIPLEBUF
+            SDL_TRIPLEBUF
+        #else
+            SDL_DOUBLEBUF
+        #endif
+    );
+#else
     return SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE|SDL_DOUBLEBUF|SDL_FULLSCREEN);
+#endif
 }
 
 int main(int argc, char** argv) {
@@ -40,17 +52,20 @@ int main(int argc, char** argv) {
 
     std::srand(std::time(NULL));
 
+#ifdef DINGUX
+    SDL_Surface* gpScreen = init();
+    SDL_Surface* gpScreen2 = gpScreen;
+#else
     SDL_Rect src;
     SDL_Rect dst;
     src.w=640; src.h=480; src.y=0;src.x=0;dst.x=0; dst.y=0;
-
     SDL_Surface* gpScreen = NULL;
-
-    int mode = 2; //mode=0;
-
     gpScreen = init();
     SDL_Surface* gpScreen2 = SDL_CreateRGBSurface(SDL_HWSURFACE, 320, 240, 32, 0, 0, 0, 0);
     SDL_Surface* gpScreen3 = NULL;
+#endif
+
+    int mode = 2;
 
     Audio* gpAudio = new Audio();
     Jeu* gpJeu = new Jeu(gpAudio);
@@ -116,10 +131,11 @@ int main(int argc, char** argv) {
             default : break;
         }
 
+#ifndef DINGUX
         SDL_FreeSurface(gpScreen3);
         gpScreen3 = zoomSurface (gpScreen2, 2, 2, 0);
         SDL_BlitSurface(gpScreen3, &src, gpScreen, &dst);
-
+#endif
         SDL_Flip(gpScreen);
 
         if (SDL_GetTicks() < lastAnimTime + 20) SDL_Delay(lastAnimTime+20-SDL_GetTicks());
@@ -127,8 +143,10 @@ int main(int argc, char** argv) {
 
     }
 
+#ifndef DINGUX
     SDL_FreeSurface(gpScreen2);
     SDL_FreeSurface(gpScreen3);
+#endif
 
     delete gpEncyclopedie;
     delete gpGenerique;

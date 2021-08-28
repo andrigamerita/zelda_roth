@@ -20,6 +20,26 @@
 #include "Jeu.h"*/
 #include "Keyboard.h"
 
+// REMAP BUTTONS
+#ifdef DINGUX
+	#undef SDLK_SPACE
+	#undef SDLK_LSHIFT
+	#undef SDLK_p
+	#undef SDLK_LCTRL
+	#undef SDLK_z
+	#undef SDLK_x
+	#undef SDLK_c
+	#undef SDLK_m
+	#define SDLK_z	 	308 //A ATTACK
+	#define SDLK_SPACE 	308 //A TALK/READ
+	#define SDLK_LSHIFT 306 //B RUN
+	#define SDLK_c		306 //B PUSH/PULL
+	#define SDLK_LCTRL 	8 //R LOOK AROUND
+	#define SDLK_x	 	32 //Y USE ITEM
+	#define SDLK_p 		304 //X MAP
+	#define SDLK_m		9 //L ENCYCLOPEDIA
+#endif
+
 Keyboard::Keyboard(Jeu* jeu, Carte* carte, Encyclopedie* encycl, SDL_Surface* screen, int m) : 
     gpJeu(jeu), gpCarte(carte), gpEncyclopedie(encycl), mode(m), gFullScreen(1), 
     gpScreen(screen), tmp(0), tmpx(0), tmpc(0), tmpw(0), tmpt(0), tmpp(0), tmpm(0),
@@ -85,6 +105,9 @@ int Keyboard::gererClavier() {
 }
 
 void Keyboard::toggleFullScreen() {
+#ifdef DINGUX 
+	return;
+#endif
     gFullScreen = (gFullScreen ? 0 : SDL_FULLSCREEN);
     gFullScreen ? SDL_ShowCursor(SDL_DISABLE) : SDL_ShowCursor(SDL_ENABLE);
     gpScreen = SDL_SetVideoMode(640, 480, 32, SDL_HWSURFACE
@@ -276,7 +299,7 @@ void Keyboard::pollKeys(Uint8* keys) {
             }
             
             
-            //épée
+            //\E9p\E9e
             if ((gpJoueur->getTypeAnim()==AUCUNE || gpJoueur->getTypeAnim()==MARCHE) 
             && !gpJoueur->getCharge() && gpJoueur->getEpee() && !gpJeu->getStop()
             && !gpJoueur->isLapin() && !gpJoueur->getImmo()) {

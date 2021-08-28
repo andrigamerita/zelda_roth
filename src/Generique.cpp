@@ -15,7 +15,11 @@
 Generique::Generique(Jeu* jeu) : gpJeu(jeu), anim(0) {
     imageFin = NULL;
     imageArbre = NULL;
+#ifdef DINGUX
+    image = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0, 0, 0, 0);
+#else
     image = SDL_CreateRGBSurface(SDL_HWSURFACE, 320, 240, 32, 0, 0, 0, 0);
+#endif
     imageTitre = IMG_Load("data/images/logos/titre.png");
     SDL_SetColorKey(imageTitre,SDL_SRCCOLORKEY,SDL_MapRGB(imageTitre->format,0,0,255));
     imageCurseur = IMG_Load("data/images/logos/curseur.png");
@@ -375,11 +379,49 @@ void Generique::initAide1() {
     
     gpJeu->affiche(image, "HELP 1/2", 40, 16);
     
+#ifdef DINGUX    
+    gpJeu->affiche(image, "Return to the game: Start - Next: Right", 24, 208);
+#else
     gpJeu->affiche(image, "Return to the game: Enter - Next: Right", 24, 208);
+#endif
     
     int ligne = 64;
     Joueur* gpJoueur = gpJeu->getJoueur();
     
+#ifdef DINGUX
+    gpJeu->affiche(image, "Read / Open / Speak: A", 24, ligne); ligne+=16;
+    gpJeu->affiche(image, "Confirm / Pass text: Start", 24, ligne); ligne+=16;
+    gpJeu->affiche(image, "Move Link: D-pad", 24, ligne); ligne+=16;
+    if (gpJoueur->hasObjet(O_BOTTES)) {
+        gpJeu->affiche(image, "Run : A hold", 24, ligne); 
+        ligne+=16;}
+    if (gpJoueur->getEpee()) {
+        gpJeu->affiche(image, "Use sword: B", 24, ligne); ligne+=16;
+        gpJeu->affiche(image, "Spin attack: B hold then dropped", 24, ligne); 
+        ligne+=16;}
+    gpJeu->affiche(image, "Item selection: Start", 24, ligne); ligne+=16;
+    if (ligne >= 176) return;
+    gpJeu->affiche(image, "Use selected object: Y", 24, ligne); ligne+=16;
+    if (ligne >= 176) return;
+    if (gpJoueur->hasObjet(O_GANTS)) {
+        gpJeu->affiche(image, "Carry without select gloves: A", 24, ligne); 
+        ligne+=16;}
+    if (ligne >= 176) return;
+    if (gpJoueur->hasObjet(O_CARTE))
+        gpJeu->affiche(image, "See the map: X (outside or dungeons)", 24, ligne);
+    else gpJeu->affiche(image, "See the map: X (in dungeons)", 24, ligne);
+    ligne+=16;
+    if (ligne >= 176) return;
+    if (gpJoueur->hasObjet(O_ENCYCL)) {
+        gpJeu->affiche(image, "See defeated monsters: M", 24, ligne); 
+        ligne+=16;}
+    if (ligne >= 176) return;
+    gpJeu->affiche(image, "Look around: D-pad and direction", 24, ligne); ligne+=16;
+    //if (ligne >= 176) return;
+    //gpJeu->affiche(image, "Enlarge / Shrink: Ctrl and Enter", 24, ligne); ligne+=16;
+    if (ligne >= 176) return;
+    gpJeu->affiche(image, "Save / Quit: Select", 24, ligne); ligne+=16;
+#else 
     gpJeu->affiche(image, "Read / Open / Speak: Space", 24, ligne); ligne+=16;
     gpJeu->affiche(image, "Confirm / Pass text: Enter", 24, ligne); ligne+=16;
     gpJeu->affiche(image, "Move Link: Arrows", 24, ligne); ligne+=16;
@@ -412,6 +454,7 @@ void Generique::initAide1() {
     gpJeu->affiche(image, "Enlarge / Shrink: Ctrl and Enter", 24, ligne); ligne+=16;
     if (ligne >= 176) return;
     gpJeu->affiche(image, "Save / Quit: Esc", 24, ligne); ligne+=16;
+#endif
 }
 
 void Generique::initAide2() {
@@ -453,7 +496,11 @@ void Generique::initAide2() {
     
     gpJeu->affiche(image, "HELP 2/2", 40, 16);
     
+#ifdef DINGUX    
+    gpJeu->affiche(image, "Return to the game: Start - Previous: Left", 24, 208);
+#else
     gpJeu->affiche(image, "Return to the game: Enter - Previous: Left", 24, 208);
+#endif
     
     int ligne = 64-112;
     Joueur* gpJoueur = gpJeu->getJoueur();
@@ -462,6 +509,30 @@ void Generique::initAide2() {
     if (gpJoueur->hasObjet(O_BOTTES)) ligne+=16;
     if (gpJoueur->getEpee()) ligne+=32;
     if (ligne >= 64) 
+
+
+#ifdef DINGUX
+    gpJeu->affiche(image, "Use selected object: Y", 24, ligne); ligne+=16;
+    if (ligne >= 64) 
+    if (gpJoueur->hasObjet(O_GANTS)) {
+        gpJeu->affiche(image, "Carry without select gloves: A", 24, ligne); 
+        ligne+=16;}
+    if (ligne >= 64) {
+    if (gpJoueur->hasObjet(O_CARTE))
+        gpJeu->affiche(image, "See the map: X (outside or dungeons)", 24, ligne);
+    else gpJeu->affiche(image, "See the map: X (in dungeons)", 24, ligne);}
+    ligne+=16;
+    if (ligne >= 64) 
+    if (gpJoueur->hasObjet(O_ENCYCL)) {
+        gpJeu->affiche(image, "See defeated monsters: M", 24, ligne); 
+        ligne+=16;}
+    if (ligne >= 64) 
+    gpJeu->affiche(image, "Look around: R and direction", 24, ligne); ligne+=16;
+    //if (ligne >= 64) 
+    //gpJeu->affiche(image, "Enlarge / Shrink: Ctrl and Enter", 24, ligne); ligne+=16;
+    if (ligne >= 64) 
+    gpJeu->affiche(image, "Save / Quit: Select", 24, ligne); ligne+=16;
+#else
     gpJeu->affiche(image, "Use selected object: X", 24, ligne); ligne+=16;
     if (ligne >= 64) 
     if (gpJoueur->hasObjet(O_GANTS)) {
@@ -482,6 +553,7 @@ void Generique::initAide2() {
     gpJeu->affiche(image, "Enlarge / Shrink: Ctrl and Enter", 24, ligne); ligne+=16;
     if (ligne >= 64) 
     gpJeu->affiche(image, "Save / Quit: Esc", 24, ligne); ligne+=16;
+#endif
 }
 
 void Generique::initRang(int i) {
@@ -564,7 +636,11 @@ void Generique::cadre(int x, int y, int w, int h) {
 void Generique::initScore() {
     SDL_FreeSurface(imageArbre);
     imageArbre = IMG_Load("data/images/logos/arbre.png");
+#ifdef DINGUX
+    image = SDL_CreateRGBSurface(SDL_SWSURFACE, 320, 240, 16, 0, 0, 0, 0);
+#else
     image = SDL_CreateRGBSurface(SDL_HWSURFACE, 320, 240, 32, 0, 0, 0, 0);
+#endif
     
     SDL_Rect dst; 
     
